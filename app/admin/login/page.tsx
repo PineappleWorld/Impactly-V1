@@ -103,50 +103,64 @@ export default function AdminLoginPage() {
   };
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSignupError(null);
-    setSignupLoading(true);
+  e.preventDefault();
+  setSignupError(null);
+  setSignupLoading(true);
 
-    try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  try {
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: signupEmail,
+      password: signupPassword,
+    });
+
+    if (signUpError) {
+      setSignupError(signUpError.message);
+      setSignupLoading(false);
+      return;
+    }
+
+    if (!signUpData.user) {
+      setSignupError('Failed to create user account');
+      setSignupLoading(false);
+      return;
+    }
+
+    const { error: insertError } = await supabase
+      .from('admin_users')
+      .insert({
+        id: signUpData.user.id,
         email: signupEmail,
-        password: signupPassword,
+        role: 'superadmin'
       });
 
-      if (signUpError) {
-        setSignupError(signUpError.message);
-        setSignupLoading(false);
-        return;
-      }
+    if (insertError) {
+      console.error('Admin insert error:', insertError);
+      setSignupError(`Failed to set admin role. Error: ${insertError.message}`);
+      setSignupLoading(false);
+      return;
+    }
 
-      if (!signUpData.user) {
-        setSignupError('Failed to create user account');
-        setSignupLoading(false);
-        return;
-      }
+    await supabase.auth.signInWithPassword({
+      email: signupEmail,
+      password: signupPassword,
+    });
 
-      const { error: insertError } = await supabase
-        .from('admin_users')
-        .insert({
-          id: signUpData.user.id,
-          email: signupEmail,
-          role: 'superadmin',
-        });
+    setSignupSuccess(true);
+    setAdminExists(true);
 
-      if (insertError) {
-        setSignupError(`Account created but failed to set admin role: ${insertError.message}`);
-        setSignupLoading(false);
-        return;
-      }
+    setTimeout(() => {
+      setEmail(signupEmail);
+      setPassword(signupPassword);
+      setSignupSuccess(false);
+    }, 3000);
 
-      setSignupSuccess(true);
-      setAdminExists(true);
-
-      setTimeout(() => {
-        setEmail(signupEmail);
-        setPassword(signupPassword);
-        setSignupSuccess(false);
-      }, 3000);
+  } catch (err) {
+    console.error('Signup error:', err);
+    setSignupError('An unexpected error occurred during signup');
+  } finally {
+    setSignupLoading(false);
+  }
+};
     } catch (err) {
       setSignupError('An unexpected error occurred');
       console.error(err);
