@@ -109,13 +109,12 @@ export default function AdminLoginPage() {
 
     try {
       // Check if this is first admin
-      const { data: adminCount, error: countError } = await supabase
+      const { data: existingAdmins } = await supabase
         .from('admin_users')
-        .select('count');
+        .select('count')
+        .single();
 
-      if (countError) throw countError;
-
-      const isFirstAdmin = !adminCount || adminCount.length === 0;
+      const isFirstAdmin = !existingAdmins || existingAdmins.count === 0;
 
       // Sign up the user
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
@@ -124,7 +123,10 @@ export default function AdminLoginPage() {
       });
 
       if (signUpError) throw signUpError;
-      if (!authData.user) throw new Error('No user data returned');
+
+      if (!authData.user) {
+        throw new Error('Failed to create account');
+      }
 
       // Create admin user entry
       const { error: adminError } = await supabase
@@ -142,7 +144,7 @@ export default function AdminLoginPage() {
       setSignupSuccess(true);
     } catch (error: any) {
       console.error('Signup error:', error);
-      setSignupError(error.message);
+      setSignupError(error.message || 'An unexpected error occurred');
     } finally {
       setSignupLoading(false);
     }
