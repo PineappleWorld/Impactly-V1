@@ -128,16 +128,14 @@ export default function AdminLoginPage() {
         throw new Error('Failed to create account');
       }
 
-      // Create admin user entry
-      const { error: adminError } = await supabase
+      // Add the user to admin_users table as superadmin
+      const { error: adminInsertError } = await supabase
         .from('admin_users')
-        .insert([
-          {
-            id: authData.user.id,
-            email: signupEmail,
-            role: isFirstAdmin ? 'superadmin' : 'admin',
-          },
-        ]);
+        .insert({ 
+          id: signUpData.user.id, 
+          email: signupEmail,
+          role: 'superadmin'
+        });
 
       if (adminError) throw adminError;
 
