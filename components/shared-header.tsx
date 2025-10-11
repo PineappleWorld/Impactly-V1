@@ -6,6 +6,7 @@ import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase';
+import SignOutButton from '@/components/SignOutButton';
 
 type SocialLink = {
   platform: string;
@@ -119,11 +120,14 @@ export function SharedHeader() {
           </div>
 
           {user ? (
-            <Link href="/profile">
-              <Button className="rounded-full px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm">
-                Profile
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/profile">
+                <Button className="rounded-full px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm">
+                  Profile
+                </Button>
+              </Link>
+              <SignOutButton />
+            </div>
           ) : (
             <Link href="/auth">
               <Button className="rounded-full px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm">
