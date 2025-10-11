@@ -125,10 +125,14 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Add the user to admin_users table
+      // Add the user to admin_users table as superadmin
       const { error: adminInsertError } = await supabase
         .from('admin_users')
-        .insert({ id: signUpData.user.id });
+        .insert({ 
+          id: signUpData.user.id, 
+          email: signupEmail,
+          role: 'superadmin'
+        });
 
       if (adminInsertError) {
         setSignupError(`Failed to grant admin privileges: ${adminInsertError.message}`);
