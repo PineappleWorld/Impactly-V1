@@ -108,21 +108,24 @@ export default function AdminLoginPage() {
     setSignupLoading(true);
 
     try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      // Check if this is first admin
+      const { data: existingAdmins } = await supabase
+        .from('admin_users')
+        .select('count')
+        .single();
+
+      const isFirstAdmin = !existingAdmins || existingAdmins.count === 0;
+
+      // Sign up the user
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
       });
 
-      if (signUpError) {
-        setSignupError(signUpError.message);
-        setSignupLoading(false);
-        return;
-      }
+      if (signUpError) throw signUpError;
 
-      if (!signUpData.user) {
-        setSignupError('Failed to create account');
-        setSignupLoading(false);
-        return;
+      if (!authData.user) {
+        throw new Error('Failed to create account');
       }
 
       // Add the user to admin_users table as superadmin
@@ -134,17 +137,13 @@ export default function AdminLoginPage() {
           role: 'superadmin'
         });
 
-      if (adminInsertError) {
-        setSignupError(`Failed to grant admin privileges: ${adminInsertError.message}`);
-        setSignupLoading(false);
-        return;
-      }
+      if (adminError) throw adminError;
 
       setSignupSuccess(true);
-      setSignupLoading(false);
-    } catch (err) {
-      setSignupError('An unexpected error occurred');
-      console.error('Signup error:', err);
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      setSignupError(error.message || 'An unexpected error occurred');
+    } finally {
       setSignupLoading(false);
     }
   };
