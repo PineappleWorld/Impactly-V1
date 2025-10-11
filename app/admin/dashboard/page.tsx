@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Settings, LogOut, Save, Eye, EyeOff, Loader as Loader2, Key } from 'lucide-react';
+import { Sparkles, Settings, Save, Eye, EyeOff, Loader as Loader2, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 import { FeaturedManager } from './featured-manager';
 import { SyncManager } from './sync-manager';
+import SignOutButton from '@/components/SignOutButton';
 
 type Setting = {
   id: string;
@@ -25,7 +26,7 @@ type Setting = {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { user, isAdmin, loading: authLoading, signOut } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const [settings, setSettings] = useState<Setting[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -98,11 +99,6 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/admin/login');
-  };
-
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
@@ -168,10 +164,7 @@ export default function AdminDashboardPage() {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">{user.email}</span>
-            <Button variant="outline" onClick={handleSignOut} className="rounded-xl">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <SignOutButton variant="outline" showIcon className="rounded-xl" />
           </div>
         </div>
       </header>
