@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NEXT_PUBLIC_SITE_URL = "https://impactly-alpha.netlify.app"
+  NODE_VERSION = "18"
+
+# Ensure clean builds
+[build.processing]
+  skip_processing = false
+
+[context.production]
+  command = "npm run build"
+
+[context.deploy-preview]
+  command = "npm run build"
