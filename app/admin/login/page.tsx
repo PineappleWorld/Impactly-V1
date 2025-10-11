@@ -132,12 +132,12 @@ export default function AdminLoginPage() {
       const { error: adminInsertError } = await supabase
         .from('admin_users')
         .insert({ 
-          id: signUpData.user.id, 
+          id: authData.user.id, 
           email: signupEmail,
           role: 'superadmin'
         });
 
-      if (adminError) throw adminError;
+      if (adminInsertError) throw adminInsertError;
 
       setSignupSuccess(true);
     } catch (error: any) {
