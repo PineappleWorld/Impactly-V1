@@ -8,8 +8,8 @@ export const dynamic = 'force-dynamic';
  * This helps diagnose connectivity and authentication issues
  */
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
+  const supabaseUrl = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   const results: any = {
