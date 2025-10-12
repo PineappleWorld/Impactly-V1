@@ -24,8 +24,8 @@ export default function AdminLoginPage() {
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
-  const [adminExists, setAdminExists] = useState(false);
-  const [checkingAdmin, setCheckingAdmin] = useState(true);
+  const [adminExists, setAdminExists] = useState(true);
+  const [checkingAdmin, setCheckingAdmin] = useState(false);
 
   useEffect(() => {
     checkAuth();
