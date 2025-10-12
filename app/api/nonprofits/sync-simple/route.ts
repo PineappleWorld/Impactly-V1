@@ -9,14 +9,14 @@ export const maxDuration = 300;
  * Syncs only the first page of one category
  */
 export async function POST(request: Request) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
   const startTime = Date.now();
   console.log('[Simple Sync] Starting...');
 
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     // Get API key
     const { data: settingsData } = await supabase
       .from('app_settings')
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       })
       .map((np: any) => {
         const slug = np.nonprofitSlug || np.primarySlug || np.slug ||
-                     (np.name ? np.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'unknown');
+                      (np.name ? np.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'unknown');
 
         return {
           nonprofit_slug: slug,
