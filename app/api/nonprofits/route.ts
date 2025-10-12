@@ -90,8 +90,8 @@ export async function GET(request: Request) {
 
       try {
         // Get API key from settings
-        const supabaseServiceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+        const supabaseServiceUrl = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
+        const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
         const serviceSupabase = createClient(supabaseServiceUrl, supabaseServiceKey);
 
         const { data: settingsData } = await serviceSupabase
