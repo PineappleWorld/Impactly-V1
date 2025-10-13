@@ -162,7 +162,7 @@ export default function Home() {
                   <div key={i} className="bg-white/60 rounded-2xl h-72 animate-pulse"></div>
                 ))}
               </div>
-            ) : (
+            ) : products.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {products.map((product) => (
                   <Link key={product.productId} href={`/marketplace/${product.productId}`}> 
@@ -192,6 +192,8 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
+            ) : (
+              <p className="text-center text-xl">Gift cards coming soon...</p>
             )}
 
             <div className="text-center mt-14">
