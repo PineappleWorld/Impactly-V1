@@ -423,6 +423,71 @@ CREATE POLICY "Admins can manage sync status"
       SELECT 1 FROM admin_users
       WHERE admin_users.id = auth.uid()
     )
+  );
+
+CREATE TABLE IF NOT EXISTS featured_products (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id text NOT NULL,
+  display_order integer DEFAULT 0,
+  is_active boolean DEFAULT true,
+  created_by uuid REFERENCES auth.users(id),
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_featured_products_active ON featured_products(is_active);
+
+CREATE TABLE IF NOT EXISTS featured_nonprofits (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  nonprofit_slug text NOT NULL,
+  display_order integer DEFAULT 0,
+  is_active boolean DEFAULT true,
+  created_by uuid REFERENCES auth.users(id),
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_featured_nonprofits_active ON featured_nonprofits(is_active);
+
+ALTER TABLE featured_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE featured_nonprofits ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read featured products"
+  ON featured_products FOR SELECT
+  USING (true);
+
+CREATE POLICY "Admins can manage featured products"
+  ON featured_products FOR ALL
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE admin_users.id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE admin_users.id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Anyone can read featured nonprofits"
+  ON featured_nonprofits FOR SELECT
+  USING (true);
+
+CREATE POLICY "Admins can manage featured nonprofits"
+  ON featured_nonprofits FOR ALL
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE admin_users.id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM admin_users
+      WHERE admin_users.id = auth.uid()
+    )
   );`}
             </pre>
           </div>
