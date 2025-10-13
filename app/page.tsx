@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SharedHeader } from '@/components/shared-header';
 import { SharedFooter } from '@/components/shared-footer';
+import { motion } from 'framer-motion';
 
 type Product = {
   productId: number;
@@ -111,41 +112,65 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/40">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50/30 to-pink-50/40">
       <SharedHeader />
 
       <main>
         <section className="relative max-w-7xl mx-auto px-8 py-28 md:py-36">
           <div className="absolute inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-rose-200/30 via-amber-200/20 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-200/20 via-teal-200/20 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-purple-200/30 via-indigo-200/20 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-lavender-200/20 via-midnight-200/20 to-transparent rounded-full blur-3xl"></div>
           </div>
 
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-slate-900 mb-8 leading-[1.05] tracking-tight">
               Join The
               <br />
-              <span className="bg-gradient-to-r from-lime-500 via-emerald-600 to-teal-700 text-transparent bg-clip-text">Impact Economy</span>
+              <span
+                className="text-transparent bg-clip-text"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=80)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              >
+                Impact Economy
+              </span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-700 mb-14 leading-relaxed max-w-3xl mx-auto font-light">
-              <span className="font-semibold">BUY</span> your favorite gift cards. <span className="font-semibold">EARN</span> Impact Credits. <span className="font-semibold">SUPPORT</span> verified causes creating community change.
+              <span className="font-semibold">BUY</span> your favorite gift cards. <span className="font-semibold">EARN</span> Impact Credits. <span className="font-semibold">SUPPORT</span> verified causes.
             </p>
-            <div className="flex items-center justify-center gap-4">
+            <motion.div
+              className="flex items-center justify-center gap-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
               <Link href="/marketplace">
-                <Button size="lg" className="rounded-full px-10 py-7 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all hover:shadow-xl">
+                <Button size="lg" className="rounded-full px-10 py-7 text-lg font-medium bg-indigo-900 hover:bg-indigo-800 text-white shadow-lg transition-all hover:shadow-xl hover:scale-105">
                   Start Shopping
                 </Button>
               </Link>
               <Link href="/how-it-works">
-                <Button size="lg" variant="outline" className="rounded-full px-10 py-7 text-lg font-medium bg-white/80 hover:bg-white border-slate-300 text-slate-900 transition-all">
+                <Button size="lg" variant="outline" className="rounded-full px-10 py-7 text-lg font-medium bg-white/80 hover:bg-white border-indigo-300 text-indigo-900 transition-all hover:scale-105">
                   How It Works
                 </Button>
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </section>
 
-        <section className="py-20 relative">
+        <motion.section
+          className="py-20 relative"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
           <div className="max-w-7xl mx-auto px-8">
             <div className="mb-14">
               <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-4 tracking-tight">
@@ -165,8 +190,8 @@ export default function Home() {
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {products.map((product) => (
-                  <Link key={product.productId} href={`/marketplace/${product.productId}`}>
-                    <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 cursor-pointer overflow-hidden group">
+                  <Link key={product.productId} href={`/marketplace/${product.productId}`}> 
+                    <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 hover:scale-105 cursor-pointer overflow-hidden">
                       <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden">
                         {product.logoUrls && product.logoUrls.length > 0 ? (
                           <img
@@ -196,19 +221,24 @@ export default function Home() {
 
             <div className="text-center mt-14">
               <Link href="/marketplace">
-                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all">
+                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-indigo-900 hover:bg-indigo-800 text-white shadow-lg transition-all hover:scale-105">
                   View All Gift Cards
                 </Button>
               </Link>
             </div>
           </div>
-        </section>
+        </motion.section>
 
-        <section className="bg-white/50 backdrop-blur-sm py-24">
+        <motion.section
+          className="bg-white/50 backdrop-blur-sm py-24"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
           <div className="max-w-7xl mx-auto px-8">
             <div className="grid md:grid-cols-3 gap-16">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl shadow-lg mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl shadow-lg mb-6">
                   <CreditCard className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-slate-900 mb-3">
@@ -220,7 +250,7 @@ export default function Home() {
               </div>
 
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl shadow-lg mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg mb-6">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-slate-900 mb-3">
@@ -232,7 +262,7 @@ export default function Home() {
               </div>
 
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl shadow-lg mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-500 to-indigo-500 rounded-2xl shadow-lg mb-6">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-slate-900 mb-3">
@@ -244,9 +274,14 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
-        <section className="py-24">
+        <motion.section
+          className="py-24"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
           <div className="max-w-7xl mx-auto px-8">
             <div className="text-center mb-16">
               <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-5 tracking-tight">
@@ -267,7 +302,7 @@ export default function Home() {
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {nonprofits.map((nonprofit) => (
                   <Link key={nonprofit.nonprofitSlug} href="/charities">
-                    <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 group cursor-pointer">
+                    <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 hover:scale-105 group cursor-pointer">
                       <div className="aspect-video overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
                         {nonprofit.coverImageUrl || nonprofit.logoUrl ? (
                           <img
@@ -295,13 +330,13 @@ export default function Home() {
 
             <div className="text-center mt-14">
               <Link href="/charities">
-                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all">
+                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-indigo-900 hover:bg-indigo-800 text-white shadow-lg transition-all hover:scale-105">
                   View All Partners
                 </Button>
               </Link>
             </div>
           </div>
-        </section>
+        </motion.section>
 
       </main>
 
