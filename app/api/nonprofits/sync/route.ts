@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
       try {
         const firstPage = await fetchFromEveryOrg(cat, apiKey, 1);
-        const totalPages = firstPage.pagination?.pages || 1;
+        const totalPages = Math.min(firstPage.pagination?.pages || 1, 1);
         const totalResults = firstPage.pagination?.total_results || 0;
 
         console.log(`[Sync] Category ${cat}: ${totalResults} total results across ${totalPages} pages`);
