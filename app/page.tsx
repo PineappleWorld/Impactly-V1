@@ -127,8 +127,8 @@ export default function Home() {
               <br />
               <span className="bg-gradient-to-r from-lime-500 via-emerald-600 to-teal-700 text-transparent bg-clip-text">Impact Economy</span>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-700 mb-14 leading-relaxed max-w-3xl mx-auto font-light">
-              <span className="font-semibold">BUY</span> your favorite gift cards. <span className="font-semibold">EARN</span> Impact Credits. <span className="font-semibold">SUPPORT</span> verif[...]
+            <p className="text-sm md:text-lg text-slate-700 mb-14 leading-relaxed mx-auto font-light">
+              <span className="font-semibold">Buy</span> your favorite gift cards. <span className="font-semibold">Earn</span> Impact Credits. <span className="font-semibold">Support</span> verified causes.
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link href="/marketplace">
@@ -166,7 +166,7 @@ export default function Home() {
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {products.map((product) => (
                   <Link key={product.productId} href={`/marketplace/${product.productId}`}> 
-                    <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 cursor-pointer overflow-hidden group">
+                    <Card className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 cursor-pointer overflow-hidden">
                       <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden">
                         {product.logoUrls && product.logoUrls.length > 0 ? (
                           <img
@@ -182,130 +182,4 @@ export default function Home() {
                         <h3 className="font-semibold text-lg text-slate-900 mb-1.5 line-clamp-2">
                           {product.brand.brandName}
                         </h3>
-                        {product.fixedRecipientDenominations.length > 0 && (
-                          <p className="text-sm text-slate-500">
-                            From {product.recipientCurrencyCode} {product.fixedRecipientDenominations[0]}
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            <div className="text-center mt-14">
-              <Link href="/marketplace">
-                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all">
-                  View All Gift Cards
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-white/50 backdrop-blur-sm py-24">
-          <div className="max-w-7xl mx-auto px-8">
-            <div className="grid md:grid-cols-3 gap-16">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl shadow-lg mb-6">
-                  <CreditCard className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-slate-900 mb-3">
-                  Choose Your Gift Card
-                </h3>
-                <p className="text-lg text-slate-600 leading-relaxed font-light">
-                  Browse hundreds of gift cards from top brands. Same great value, now with purpose
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl shadow-lg mb-6">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-slate-900 mb-3">
-                  Automatic Impact Split
-                </h3>
-                <p className="text-lg text-slate-600 leading-relaxed font-light">
-                  50% of profit Impactly earns from your purchase goes directly to verified causes you support. Track impact in real-time
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl shadow-lg mb-6">
-                  <Heart className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-slate-900 mb-3">
-                  Earn Impact Credits
-                </h3>
-                <p className="text-lg text-slate-600 leading-relaxed font-light">
-                  Every purchase earns Impact Credits which can be redeemed or donated to causes you love
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24">
-          <div className="max-w-7xl mx-auto px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-5 tracking-tight">
-                Social Impact Partners
-              </h2>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto font-light">
-                We connect with verified nonprofits to ensure our contributions drive meaningful change
-              </p>
-            </div>
-
-            {nonprofitsLoading ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-white/60 rounded-2xl h-64 animate-pulse"></div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {nonprofits.map((nonprofit) => (
-                  <Link key={nonprofit.nonprofitSlug} href="/charities">
-                    <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 group cursor-pointer">
-                      <div className="aspect-video overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
-                        {nonprofit.coverImageUrl || nonprofit.logoUrl ? (
-                          <img
-                            src={nonprofit.coverImageUrl || nonprofit.logoUrl}
-                            alt={nonprofit.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Heart className="w-16 h-16 text-slate-300" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-5">
-                        <h3 className="font-semibold text-lg text-slate-900 mb-1 line-clamp-1">{nonprofit.name}</h3>
-                        {nonprofit.category && (
-                          <p className="text-sm text-slate-500">{nonprofit.category}</p>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            <div className="text-center mt-14">
-              <Link href="/charities">
-                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all">
-                  View All Partners
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-      </main>
-
-      <SharedFooter />
-    </div>
-  );
-}
+                       
