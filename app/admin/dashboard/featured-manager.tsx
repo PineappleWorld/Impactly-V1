@@ -216,4 +216,53 @@ export function FeaturedManager() {
               <Plus className="w-4 h-4 mr-1" />
               Add
             </Button>
-          </
+          </div>
+
+          <div className="space-y-2">
+            {featuredProducts.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-4">No featured products yet</p>
+            ) : (
+              featuredProducts.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium">Product ID: {item.product_id}</p>
+                    <p className="text-sm text-slate-500">Order: {item.display_order}</p>
+                  </div>
+                  <Button
+                    onClick={() => removeFeaturedProduct(item.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Heart className="w-5 h-5 text-rose-600" />
+            <CardTitle>Featured Nonprofits</CardTitle>
+          </div>
+          <CardDescription>
+            Manage which nonprofits appear in the featured section on homepage and charities page
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Input
+                type="text"
+                placeholder="Search nonprofits by name"
+                value={searchNonprofit}
+                onChange={(e) => setSearchNonprofit(e.target.value)}
+              />
+              {searchNonprofit && filteredNonprofits.length > 
