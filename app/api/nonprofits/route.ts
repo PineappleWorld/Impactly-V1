@@ -47,6 +47,7 @@ export async function GET(request: Request) {
     const category = searchParams.get('cause') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const perPage = parseInt(searchParams.get('perPage') || '100000');
+    const slug = searchParams.get('slug') || '';
 
     let dbQuery = supabase
       .from('nonprofits_cache')
@@ -58,6 +59,10 @@ export async function GET(request: Request) {
 
     if (query) {
       dbQuery = dbQuery.or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+    }
+
+    if (slug) {
+      dbQuery = dbQuery.eq('nonprofit_slug', slug);
     }
 
     const from = (page - 1) * perPage;
@@ -84,8 +89,8 @@ export async function GET(request: Request) {
       category: item.category,
     }));
 
-    // If cache is empty and no specific query, try live API as fallback
-    if (nonprofits.length === 0 && !query && !error) {
+    // If cache is empty and no specific query or slug, try live API as fallback
+    if (!slug && nonprofits.length === 0 && !query && !error) {
       console.log('[Nonprofits API] Cache is empty, attempting live API fallback...');
 
       try {
@@ -126,7 +131,6 @@ export async function GET(request: Request) {
         }
       } catch (liveApiError: any) {
         console.error('[Nonprofits API] Live API fallback failed:', liveApiError.message);
-        // Continue to return empty cache data with helpful message
       }
     }
 
