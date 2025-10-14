@@ -182,7 +182,7 @@ export default function Home() {
                         <h3 className="font-semibold text-lg text-slate-900 mb-1.5 line-clamp-2">
                           {product.brand?.brandName || 'Unknown Brand'}
                         </h3>
-                        {product.fixedRecipientDenominations.length > 0 && (
+                        {product.fixedRecipientDenominations?.length > 0 && (
                           <p className="text-sm text-slate-500">
                             From {product.recipientCurrencyCode} {product.fixedRecipientDenominations[0]}
                           </p>
