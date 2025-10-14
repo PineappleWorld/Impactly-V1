@@ -53,6 +53,8 @@ export function FeaturedManager() {
   const [selectedNonprofit, setSelectedNonprofit] = useState<Nonprofit | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingAll, setLoadingAll] = useState(false);
+  const [addProductError, setAddProductError] = useState<string | null>(null);
+  const [addNonprofitError, setAddNonprofitError] = useState<string | null>(null);
 
   useEffect(() => {
     loadFeatured();
@@ -79,8 +81,8 @@ export function FeaturedManager() {
     setLoadingAll(true);
     try {
       const [productsRes, nonprofitsRes] = await Promise.all([
-        fetch('/api/reloadly/products?size=200'),
-        fetch('/api/nonprofits?perPage=100')
+        fetch('/api/reloadly/products?size=1000'),
+        fetch('/api/nonprofits?perPage=1000')
       ]);
 
       if (productsRes.ok) {
@@ -110,6 +112,12 @@ export function FeaturedManager() {
   ).slice(0, 10);
 
   const addFeaturedProduct = async (id: number) => {
+    setAddProductError(null);
+    // Check if already featured
+    if (featuredProducts.some(p => p.product_id === id)) {
+      setAddProductError('Product already featured');
+      return;
+    }
     try {
       const { error } = await supabase.from('featured_products').insert({
         product_id: id,
@@ -118,13 +126,22 @@ export function FeaturedManager() {
 
       if (error) throw error;
 
+      setSelectedProduct(null);
+      setSearchProduct('');
       loadFeatured();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding featured product:', error);
+      setAddProductError(error.message || 'Failed to add product');
     }
   };
 
   const addFeaturedNonprofit = async (slug: string) => {
+    setAddNonprofitError(null);
+    // Check if already featured
+    if (featuredNonprofits.some(n => n.nonprofit_slug === slug)) {
+      setAddNonprofitError('Nonprofit already featured');
+      return;
+    }
     try {
       const { error } = await supabase.from('featured_nonprofits').insert({
         nonprofit_slug: slug,
@@ -133,9 +150,12 @@ export function FeaturedManager() {
 
       if (error) throw error;
 
+      setSelectedNonprofit(null);
+      setSearchNonprofit('');
       loadFeatured();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding featured nonprofit:', error);
+      setAddNonprofitError(error.message || 'Failed to add nonprofit');
     }
   };
 
@@ -180,6 +200,7 @@ export function FeaturedManager() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {addProductError && <p className="text-sm text-rose-600">{addProductError}</p>}
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Input
@@ -209,8 +230,6 @@ export function FeaturedManager() {
             <Button onClick={() => {
               if (selectedProduct) {
                 addFeaturedProduct(selectedProduct.productId);
-                setSelectedProduct(null);
-                setSearchProduct('');
               }
             }} size="sm" className="shrink-0" disabled={!selectedProduct}>
               <Plus className="w-4 h-4 mr-1" />
@@ -257,6 +276,7 @@ export function FeaturedManager() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {addNonprofitError && <p className="text-sm text-rose-600">{addNonprofitError}</p>}
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Input
@@ -286,8 +306,6 @@ export function FeaturedManager() {
             <Button onClick={() => {
               if (selectedNonprofit) {
                 addFeaturedNonprofit(selectedNonprofit.nonprofitSlug);
-                setSelectedNonprofit(null);
-                setSearchNonprofit('');
               }
             }} size="sm" className="shrink-0" disabled={!selectedNonprofit}>
               <Plus className="w-4 h-4 mr-1" />
