@@ -243,4 +243,71 @@ export default function Home() {
                 <p className="text-lg text-slate-600 leading-relaxed font-light">
                   Every purchase earns Impact Credits which can be redeemed or donated to causes you love
                 </p>
-             
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-5 tracking-tight">
+                Social Impact Partners
+              </h2>
+              <p className="text-xl text-slate-600 max-w-2xl mx-auto font-light">
+                We connect with verified nonprofits to ensure our contributions drive meaningful change
+              </p>
+            </div>
+
+            {nonprofitsLoading ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-white/60 rounded-2xl h-64 animate-pulse"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {nonprofits.map((nonprofit) => (
+                  <Link key={nonprofit.nonprofitSlug} href="/charities">
+                    <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-xl hover:bg-white transition-all hover:-translate-y-1 group cursor-pointer">
+                      <div className="aspect-video overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
+                        {nonprofit.coverImageUrl || nonprofit.logoUrl ? (
+                          <img
+                            src={nonprofit.coverImageUrl || nonprofit.logoUrl}
+                            alt={nonprofit.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Heart className="w-16 h-16 text-slate-300" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-5">
+                        <h3 className="font-semibold text-lg text-slate-900 mb-1 line-clamp-1">{nonprofit.name}</h3>
+                        {nonprofit.category && (
+                          <p className="text-sm text-slate-500">{nonprofit.category}</p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            <div className="text-center mt-14">
+              <Link href="/charities">
+                <Button size="lg" className="rounded-full px-10 py-6 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all">
+                  View All Partners
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <SharedFooter />
+    </div>
+  );
+}
