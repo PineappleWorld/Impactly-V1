@@ -265,4 +265,63 @@ export function FeaturedManager() {
                 value={searchNonprofit}
                 onChange={(e) => setSearchNonprofit(e.target.value)}
               />
-              {searchNonprofit && filteredNonprofits.length > 
+              {searchNonprofit && filteredNonprofits.length > 0 && (
+                <div className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg mt-1 shadow-lg max-h-60 overflow-y-auto">
+                  {filteredNonprofits.map((nonprofit) => (
+                    <div
+                      key={nonprofit.nonprofitSlug}
+                      className="p-3 hover:bg-slate-50 cursor-pointer border-b last:border-b-0"
+                      onClick={() => {
+                        setSelectedNonprofit(nonprofit);
+                        setSearchNonprofit(nonprofit.name);
+                      }}
+                    >
+                      <p className="font-medium">{nonprofit.name}</p>
+                      <p className="text-sm text-slate-500">{nonprofit.category}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Button onClick={() => {
+              if (selectedNonprofit) {
+                addFeaturedNonprofit(selectedNonprofit.nonprofitSlug);
+                setSelectedNonprofit(null);
+                setSearchNonprofit('');
+              }
+            }} size="sm" className="shrink-0" disabled={!selectedNonprofit}>
+              <Plus className="w-4 h-4 mr-1" />
+              Add
+            </Button>
+          </div>
+
+          <div className="space-y-2">
+            {featuredNonprofits.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-4">No featured nonprofits yet</p>
+            ) : (
+              featuredNonprofits.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium">{item.nonprofit_slug}</p>
+                    <p className="text-sm text-slate-500">Order: {item.display_order}</p>
+                  </div>
+                  <Button
+                    onClick={() => removeFeaturedNonprofit(item.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
