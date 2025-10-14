@@ -180,7 +180,7 @@ export default function Home() {
                       </div>
                       <CardContent className="p-5">
                         <h3 className="font-semibold text-lg text-slate-900 mb-1.5 line-clamp-2">
-                          {product.brand.brandName}
+                          {product.brand?.brandName || 'Unknown Brand'}
                         </h3>
                         {product.fixedRecipientDenominations.length > 0 && (
                           <p className="text-sm text-slate-500">
@@ -265,7 +265,7 @@ export default function Home() {
                   <div key={i} className="bg-white/60 rounded-2xl h-64 animate-pulse"></div>
                 ))}
               </div>
-            ) : (
+            ) : nonprofits.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {nonprofits.map((nonprofit) => (
                   <Link key={nonprofit.nonprofitSlug} href="/charities">
@@ -293,6 +293,8 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
+            ) : (
+              <p className="text-center text-xl">Partners coming soon...</p>
             )}
 
             <div className="text-center mt-14">
