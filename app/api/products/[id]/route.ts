@@ -39,16 +39,15 @@ export async function GET(
     try {
       const reloadlyProduct = await reloadlyService.getProductById(productId);
       return NextResponse.json({
-        reloadly_product_id: reloadlyProduct.productId,
-        product_name: reloadlyProduct.productName,
-        brand_name: reloadlyProduct.brand.brandName,
-        country_code: reloadlyProduct.countryCode,
-        currency_code: reloadlyProduct.recipientCurrencyCode,
-        min_denomination: reloadlyProduct.minRecipientDenomination,
-        max_denomination: reloadlyProduct.maxRecipientDenomination,
-        denomination_type: reloadlyProduct.denominationType,
-        logo_url: reloadlyProduct.logoUrls?.[0] || null,
-        product_data: reloadlyProduct,
+        productId: reloadlyProduct.productId,
+        productName: reloadlyProduct.productName,
+        countryCode: reloadlyProduct.countryCode,
+        logoUrls: reloadlyProduct.logoUrls || [],
+        brand: {
+          brandName: reloadlyProduct.brand.brandName,
+        },
+        fixedRecipientDenominations: reloadlyProduct.fixedRecipientDenominations || [],
+        recipientCurrencyCode: reloadlyProduct.recipientCurrencyCode,
       });
     } catch (apiError) {
       return NextResponse.json(
