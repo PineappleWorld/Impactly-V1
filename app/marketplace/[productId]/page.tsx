@@ -16,7 +16,7 @@ type Product = {
   brand: {
     brandName: string;
   };
-  fixedRecipientDenominations: number[];
+  fixedRecipientDenominations?: number[];
   recipientCurrencyCode: string;
   denominationType?: 'FIXED' | 'RANGE';
   minRecipientDenomination?: number;
@@ -59,7 +59,7 @@ export default function ProductDetailPage() {
         setProduct(data);
         
         // Auto-select first denomination if available
-        if (data.fixedRecipientDenominations && data.fixedRecipientDenominations.length > 0) {
+        if (data.fixedRecipientDenominations && Array.isArray(data.fixedRecipientDenominations) && data.fixedRecipientDenominations.length > 0) {
           setSelectedDenomination(data.fixedRecipientDenominations[0]);
         }
       } else {
@@ -216,7 +216,7 @@ export default function ProductDetailPage() {
             {/* Buy Now Button */}
             <Button 
               onClick={handleBuyNow}
-              disabled={!selectedDenomination && product.fixedRecipientDenominations && product.fixedRecipientDenominations.length > 0}
+              disabled={product.fixedRecipientDenominations && product.fixedRecipientDenominations.length > 0 && !selectedDenomination}
               className="w-full rounded-2xl h-14 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
