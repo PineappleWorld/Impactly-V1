@@ -2,62 +2,97 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { Gift, Loader as Loader2, CircleAlert as AlertCircle, Sparkles, ArrowLeft, ShoppingCart } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { Gift, Loader2, AlertCircle, ShoppingCart, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { SharedHeader } from '@/components/shared-header';
 
 type Product = {
-  id: string;
-  reloadly_product_id: number;
-  product_name: string;
-  brand_name: string;
-  country_code: string;
-  currency_code: string;
-  min_denomination: number;
-  max_denomination: number;
-  denomination_type: 'FIXED' | 'RANGE';
-  logo_url: string;
-  product_data: any;
+  productId: number;
+  productName: string;
+  countryCode: string;
+  logoUrls: string[];
+  brand: {
+    brandName: string;
+  };
+  fixedRecipientDenominations: number[];
+  recipientCurrencyCode: string;
+  denominationType?: 'FIXED' | 'RANGE';
+  minRecipientDenomination?: number;
+  maxRecipientDenomination?: number;
+  redeemInstruction?: {
+    concise?: string;
+  };
 };
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDenomination, setSelectedDenomination] = useState<number | null>(null);
 
   useEffect(() => {
-    if (params.id) {
-      fetchProduct(params.id as string);
+    if (params.productId) {
+      fetchProduct(params.productId as string);
     }
-  }, [params.id]);
+  }, [params.productId]);
 
   const fetchProduct = async (id: string) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/products/${id}`);
+      // Validate productId is a number
+      const productId = parseInt(id);
+      if (isNaN(productId) || productId <= 0) {
+        setError('Invalid product ID');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`/api/products/${productId}`);
+      
       if (response.ok) {
         const data = await response.json();
         setProduct(data);
+        
+        // Auto-select first denomination if available
+        if (data.fixedRecipientDenominations && data.fixedRecipientDenominations.length > 0) {
+          setSelectedDenomination(data.fixedRecipientDenominations[0]);
+        }
       } else {
-        setError('Product not found');
+        const errorData = await response.json().catch(() => ({ error: 'Product not found' }));
+        setError(errorData.error || 'Product not found');
       }
-    } catch (error) {
-      console.error('Failed to fetch product:', error);
-      setError('Unable to load product details');
+    } catch (err) {
+      console.error('Failed to fetch product:', err);
+      setError('Unable to load product details. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleBuyNow = () => {
+    // TODO: Implement cart/purchase functionality
+    if (selectedDenomination && product) {
+      console.log('Purchasing:', {
+        productId: product.productId,
+        amount: selectedDenomination,
+        currency: product.recipientCurrencyCode,
+      });
+      alert(`Adding ${product.brand.brandName} ${product.recipientCurrencyCode} ${selectedDenomination} to cart (functionality coming soon)`);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/40 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-slate-400 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/40">
+        <SharedHeader />
+        <div className="flex items-center justify-center py-32">
+          <Loader2 className="w-12 h-12 text-slate-400 animate-spin" />
+        </div>
       </div>
     );
   }
@@ -65,21 +100,14 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/40">
-        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/50">
-          <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Sparkles className="w-7 h-7 text-emerald-600" />
-              <span className="text-2xl font-bold text-slate-900 tracking-tight">Impactly</span>
-            </Link>
-          </div>
-        </header>
+        <SharedHeader />
         <div className="flex flex-col items-center justify-center py-24 px-8">
           <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-16 text-center shadow-lg max-w-md">
             <AlertCircle className="w-16 h-16 text-rose-500 mx-auto mb-6" />
             <h3 className="text-2xl font-semibold text-slate-900 mb-3">
               Product Not Found
             </h3>
-            <p className="text-slate-600 mb-8 font-light">{error}</p>
+            <p className="text-slate-600 mb-8 font-light">{error || 'The product you are looking for does not exist.'}</p>
             <Link href="/marketplace">
               <Button className="rounded-full px-8 h-12 text-base font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-sm">
                 Back to Marketplace
@@ -91,48 +119,29 @@ export default function ProductDetailPage() {
     );
   }
 
-  const productData = product.product_data;
-  const denominations = productData.fixedRecipientDenominations || [];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-amber-50/40">
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/50">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <Sparkles className="w-7 h-7 text-emerald-600" />
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">Impactly</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-10">
-            <Link href="/marketplace" className="text-slate-900 font-medium">
-              Marketplace
-            </Link>
-            <Link href="/impact" className="text-slate-700 hover:text-slate-900 transition-colors text-base">
-              Social Impact
-            </Link>
-            <Link href="/charities" className="text-slate-700 hover:text-slate-900 transition-colors text-base">
-              Partners
-            </Link>
-            <Link href="/auth">
-              <Button className="rounded-full px-7 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium shadow-sm">
-                Sign In
-              </Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SharedHeader />
 
       <main className="max-w-7xl mx-auto px-8 py-16">
-        <Link href="/marketplace" className="inline-flex items-center gap-2 text-slate-700 hover:text-slate-900 mb-8 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-          Back to Marketplace
-        </Link>
+        {/* Breadcrumb Navigation */}
+        <nav className="mb-8">
+          <Link 
+            href="/marketplace" 
+            className="inline-flex items-center gap-2 text-slate-700 hover:text-slate-900 transition-colors font-light"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Marketplace
+          </Link>
+        </nav>
 
         <div className="grid md:grid-cols-2 gap-12 mb-16">
+          {/* Product Image */}
           <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-12 flex items-center justify-center">
-            {product.logo_url ? (
+            {product.logoUrls && product.logoUrls.length > 0 ? (
               <img
-                src={product.logo_url}
-                alt={product.product_name}
+                src={product.logoUrls[0]}
+                alt={product.productName}
                 className="max-w-full max-h-96 object-contain"
               />
             ) : (
@@ -140,61 +149,86 @@ export default function ProductDetailPage() {
             )}
           </div>
 
+          {/* Product Details */}
           <div>
+            {/* Country Badge */}
             <div className="mb-6">
-              <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                {product.country_code}
+              <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
+                {product.countryCode}
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
-              {product.brand_name}
+
+            {/* Brand Name */}
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight leading-tight">
+              {product.brand.brandName}
             </h1>
-            <p className="text-xl text-slate-600 font-light mb-8">
-              {product.product_name}
+
+            {/* Product Name */}
+            <p className="text-xl text-slate-600 font-light mb-8 leading-relaxed">
+              {product.productName}
             </p>
 
-            {denominations.length > 0 && (
+            {/* Fixed Denominations */}
+            {product.fixedRecipientDenominations && product.fixedRecipientDenominations.length > 0 && (
               <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-6 mb-8">
                 <h3 className="font-semibold text-lg text-slate-900 mb-4">Available Denominations</h3>
                 <div className="grid grid-cols-3 gap-3">
-                  {denominations.map((amount: number) => (
+                  {product.fixedRecipientDenominations.map((amount: number) => (
                     <button
                       key={amount}
-                      className="px-4 py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-medium transition-colors"
+                      onClick={() => setSelectedDenomination(amount)}
+                      className={`px-4 py-3 border rounded-xl text-slate-900 font-medium transition-all ${
+                        selectedDenomination === amount
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                      }`}
                     >
-                      {product.currency_code} {amount}
+                      {product.recipientCurrencyCode} {amount}
                     </button>
                   ))}
                 </div>
               </Card>
             )}
 
-            {product.denomination_type === 'RANGE' && (
+            {/* Range Denominations */}
+            {product.denominationType === 'RANGE' && product.minRecipientDenomination && product.maxRecipientDenomination && (
               <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-6 mb-8">
                 <h3 className="font-semibold text-lg text-slate-900 mb-4">Denomination Range</h3>
-                <p className="text-slate-600">
-                  {product.currency_code} {product.min_denomination} - {product.currency_code} {product.max_denomination}
+                <p className="text-slate-600 font-light">
+                  {product.recipientCurrencyCode} {product.minRecipientDenomination} - {product.recipientCurrencyCode} {product.maxRecipientDenomination}
                 </p>
               </Card>
             )}
 
-            <Card className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8">
-              <h3 className="font-semibold text-lg text-emerald-900 mb-2">Social Impact</h3>
-              <p className="text-emerald-800 font-light">
-                Every purchase automatically contributes to verified charitable causes. You earn Impact Tickets to vote on future donations.
-              </p>
+            {/* Social Impact Message */}
+            <Card className="bg-emerald-50/80 backdrop-blur-sm border border-emerald-200 rounded-2xl p-6 mb-8">
+              <div className="flex items-start gap-3">
+                <Sparkles className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-lg text-emerald-900 mb-2">Social Impact</h3>
+                  <p className="text-emerald-800 font-light leading-relaxed">
+                    Every purchase automatically contributes to verified charitable causes. You earn Impact Tickets to vote on future donations.
+                  </p>
+                </div>
+              </div>
             </Card>
 
-            <Button className="w-full rounded-2xl h-14 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg">
+            {/* Buy Now Button */}
+            <Button 
+              onClick={handleBuyNow}
+              disabled={!selectedDenomination && product.fixedRecipientDenominations && product.fixedRecipientDenominations.length > 0}
+              className="w-full rounded-2xl h-14 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
               <ShoppingCart className="w-5 h-5 mr-2" />
-              Purchase Gift Card
+              Buy Now
             </Button>
 
-            {productData.redeemInstruction?.concise && (
+            {/* Redeem Instructions */}
+            {product.redeemInstruction?.concise && (
               <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-6 mt-8">
                 <h3 className="font-semibold text-lg text-slate-900 mb-3">How to Redeem</h3>
-                <p className="text-slate-600 font-light">
-                  {productData.redeemInstruction.concise}
+                <p className="text-slate-600 font-light leading-relaxed">
+                  {product.redeemInstruction.concise}
                 </p>
               </Card>
             )}
@@ -202,6 +236,7 @@ export default function ProductDetailPage() {
         </div>
       </main>
 
+      {/* Footer */}
       <footer className="bg-white/80 backdrop-blur-md border-t border-slate-200/50 py-16 mt-24">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid md:grid-cols-4 gap-10">
