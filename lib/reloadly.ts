@@ -147,7 +147,15 @@ class ReloadlyService {
   async getProductById(productId: number): Promise<ReloadlyProduct> {
     const token = await this.getAccessToken();
 
-    const response = await fetch(`${this.baseUrl}/products/${productId}`, {
+    // Validate productId to prevent injection
+    if (!Number.isInteger(productId) || productId <= 0) {
+      throw new Error('Invalid product ID');
+    }
+
+    // Additional safety: ensure productId is properly encoded
+    const safeProductId = encodeURIComponent(productId.toString());
+
+    const response = await fetch(`${this.baseUrl}/products/${safeProductId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/com.reloadly.giftcards-v1+json',

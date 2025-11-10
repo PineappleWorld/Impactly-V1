@@ -18,6 +18,8 @@ type Purchase = {
   charity_split_amount: number;
   pact_credits_earned: number;
   purchase_date: string;
+  gift_card_code?: string;
+  recipient_email?: string;
 };
 
 type CharityContribution = {
@@ -275,7 +277,7 @@ export default function ImpactPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <Card className="bg-white/90 backdrop-blur">
+          <Card className="bg-white/90 backdrop-blur md:col-span-2">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-slate-900">Purchase History</CardTitle>
             </CardHeader>
@@ -283,33 +285,74 @@ export default function ImpactPage() {
               {purchases.length === 0 ? (
                 <p className="text-lg text-slate-600 text-center py-8">No purchases yet. Start shopping to make an impact!</p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="pb-3 text-base font-semibold text-slate-900">Product</th>
-                        <th className="pb-3 text-base font-semibold text-slate-900">Amount</th>
-                        <th className="pb-3 text-base font-semibold text-slate-900">To Charity</th>
-                        <th className="pb-3 text-base font-semibold text-slate-900">PACT</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {purchases.map((purchase) => (
-                        <tr key={purchase.id} className="border-b border-slate-100">
-                          <td className="py-4 text-base text-slate-700">{purchase.product_name}</td>
-                          <td className="py-4 text-base text-slate-900 font-medium">${parseFloat(purchase.purchase_amount.toString()).toFixed(2)}</td>
-                          <td className="py-4 text-base text-emerald-600 font-medium">${parseFloat(purchase.charity_split_amount.toString()).toFixed(2)}</td>
-                          <td className="py-4 text-base text-amber-600 font-medium">{purchase.pact_credits_earned}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-4">
+                  {purchases.map((purchase) => (
+                    <div key={purchase.id} className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg text-slate-900">{purchase.product_name}</h3>
+                          <p className="text-sm text-slate-600">
+                            {new Date(purchase.purchase_date).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-slate-900">
+                            ${parseFloat(purchase.purchase_amount.toString()).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="bg-emerald-50 rounded-lg p-3">
+                          <p className="text-xs text-emerald-700 mb-1">To Charity</p>
+                          <p className="text-lg font-semibold text-emerald-600">
+                            ${parseFloat(purchase.charity_split_amount.toString()).toFixed(2)}
+                          </p>
+                        </div>
+                        <div className="bg-amber-50 rounded-lg p-3">
+                          <p className="text-xs text-amber-700 mb-1">PACT Credits</p>
+                          <p className="text-lg font-semibold text-amber-600">
+                            {purchase.pact_credits_earned}
+                          </p>
+                        </div>
+                      </div>
+
+                      {purchase.gift_card_code && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                          <p className="text-xs text-blue-700 mb-1 font-medium">Gift Card Code</p>
+                          <div className="flex items-center gap-2">
+                            <code className="flex-1 bg-white px-3 py-2 rounded border border-blue-200 text-blue-900 font-mono text-sm">
+                              {purchase.gift_card_code}
+                            </code>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(purchase.gift_card_code!);
+                                alert('Code copied to clipboard!');
+                              }}
+                              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition-colors"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                          {purchase.recipient_email && (
+                            <p className="text-xs text-blue-600 mt-2">
+                              Code sent to: {purchase.recipient_email}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur">
+          <Card className="bg-white/90 backdrop-blur md:col-span-2">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-slate-900">Charity Contributions</CardTitle>
             </CardHeader>
