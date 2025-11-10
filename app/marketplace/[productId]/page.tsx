@@ -7,6 +7,7 @@ import { Gift, Loader2, AlertCircle, ShoppingCart, ArrowLeft, Sparkles } from 'l
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SharedHeader } from '@/components/shared-header';
+import { useCart } from '@/lib/cart-context';
 
 type Product = {
   productId: number;
@@ -28,6 +29,7 @@ type Product = {
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -75,14 +77,16 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
-    // TODO: Implement cart/purchase functionality
     if (selectedDenomination && product) {
-      console.log('Purchasing:', {
+      addItem({
         productId: product.productId,
-        amount: selectedDenomination,
+        productName: product.productName,
+        brandName: product.brand.brandName,
+        logoUrl: product.logoUrls?.[0] || '',
+        denomination: selectedDenomination,
         currency: product.recipientCurrencyCode,
+        countryCode: product.countryCode,
       });
-      alert(`Adding ${product.brand.brandName} ${product.recipientCurrencyCode} ${selectedDenomination} to cart (functionality coming soon)`);
     }
   };
 
@@ -220,7 +224,7 @@ export default function ProductDetailPage() {
               className="w-full rounded-2xl h-14 text-lg font-medium bg-slate-900 hover:bg-slate-800 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
-              Buy Now
+              Add to Cart
             </Button>
 
             {/* Redeem Instructions */}

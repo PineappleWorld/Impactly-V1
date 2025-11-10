@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase';
 import SignOutButton from '@/components/SignOutButton';
+import { useCart } from '@/lib/cart-context';
 
 type SocialLink = {
   platform: string;
@@ -17,6 +18,7 @@ type SocialLink = {
 
 export function SharedHeader() {
   const { user } = useAuth();
+  const { totalItems, openCart } = useCart();
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
 
   useEffect(() => {
@@ -121,6 +123,19 @@ export function SharedHeader() {
 
           {user ? (
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={openCart}
+                className="relative rounded-full w-10 h-10"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
               <Link href="/profile">
                 <Button className="rounded-full px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm">
                   Profile
