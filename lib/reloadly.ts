@@ -152,7 +152,10 @@ class ReloadlyService {
       throw new Error('Invalid product ID');
     }
 
-    const response = await fetch(`${this.baseUrl}/products/${productId}`, {
+    // Additional safety: ensure productId is properly encoded
+    const safeProductId = encodeURIComponent(productId.toString());
+
+    const response = await fetch(`${this.baseUrl}/products/${safeProductId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/com.reloadly.giftcards-v1+json',
