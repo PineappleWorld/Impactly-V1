@@ -82,15 +82,21 @@ export async function POST(req: NextRequest) {
             });
 
             // Initialize user_pact_credits if doesn't exist
-            await supabase
+            const { data: existingCredits } = await supabase
               .from('user_pact_credits')
-              .insert({
-                user_id: userId,
-                balance: totalTickets,
-                lifetime_earned: totalTickets,
-              })
-              .onConflict('user_id')
-              .ignore();
+              .select('id')
+              .eq('user_id', userId)
+              .maybeSingle();
+
+            if (!existingCredits) {
+              await supabase
+                .from('user_pact_credits')
+                .insert({
+                  user_id: userId,
+                  balance: totalTickets,
+                  lifetime_earned: totalTickets,
+                });
+            }
 
             // Update user_pact_credits
             const { data: currentCredits } = await supabase
@@ -108,6 +114,21 @@ export async function POST(req: NextRequest) {
                   updated_at: new Date().toISOString(),
                 })
                 .eq('user_id', userId);
+            }
+
+            // Trigger gift card fulfillment asynchronously
+            // In production, this should be a background job/queue
+            try {
+              const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+              fetch(`${baseUrl}/api/orders/process`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ transactionIds: ids }),
+              }).catch(err => console.error('Failed to trigger fulfillment:', err));
+            } catch (e) {
+              console.error('Fulfillment trigger error:', e);
             }
           }
         }

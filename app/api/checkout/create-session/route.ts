@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2024-11-20.acacia' as any,
     });
 
     // Initialize Supabase
@@ -108,6 +108,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to create transactions' }, { status: 500 });
     }
 
+    // Get user email for gift card delivery
+    const { data: userData } = await supabase.auth.admin.getUserById(userId);
+    const userEmail = userData?.user?.email || '';
+
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -115,11 +119,12 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/cancel`,
+      customer_email: userEmail,
       metadata: {
         user_id: userId,
         transaction_ids: transactions.map(t => t.id).join(','),
+        cart_items: JSON.stringify(items), // Store cart items for order processing
       },
-      customer_email: undefined, // Will be filled by Stripe
     });
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
